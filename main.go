@@ -21,12 +21,24 @@ func aboutHandle(w http.ResponseWriter, r *http.Request)  {
 
 	fmt.Fprint(w, "<h2>This is a about link. </h2>")
 }
+
+
 func main() {
 
-	http.HandleFunc("/", defaultHandle)
-	http.HandleFunc("/about", aboutHandle)
+	router := http.NewServeMux()
+	router.HandleFunc("/", defaultHandle)
+	router.HandleFunc("/about", aboutHandle)
 
-	i := http.ListenAndServe(":80", nil)
+	router.HandleFunc("/articles", func(w http.ResponseWriter, r *http.Request) {
+		switch r.Method {
+		case "GET":
+			fmt.Fprint(w, "访问文章列表")
+		case "POST":
+			fmt.Fprint(w, "创建新的文章")
+		}
+	})
+
+	i := http.ListenAndServe(":80", router)
 	log.Println(i)
 }
 
